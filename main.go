@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -89,9 +88,18 @@ func main() {
 	configPath := flag.String("config", "snippets.json", "Path to the json snippets file")
 	flag.Parse()
 
-	data, err := ioutil.ReadFile(*configPath)
+	data := []byte{}
+	data, err := os.ReadFile(*configPath)
 	if err != nil {
-		log.Fatalf("Error reading config file: %v", err)
+		p, rerr := os.Readlink(*configPath)
+		if rerr != nil {
+			log.Fatalf("could not read link or find file: %v, %v", rerr, err)
+		}
+		d, inerr := os.ReadFile(p)
+		if inerr != nil {
+			log.Fatalf("could not read link or find file: %v", inerr)
+		}
+		data = d
 	}
 
 	var snippets Snippets
@@ -119,7 +127,7 @@ func main() {
 		}
 	}
 
-	server.OnCompletion(func(ctx context.Context, req *defines.CompletionParams) (result *[]defines.CompletionItem, err error) {
+	server.OnCompletion(func(_ context.Context, req *defines.CompletionParams) (result *[]defines.CompletionItem, err error) {
 		logs.Println(req)
 		return &items, nil
 	})

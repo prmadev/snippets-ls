@@ -42,7 +42,7 @@
         # To begin with it is recommended to set this, but one must
         # remeber to bump this hash when your dependencies change.
         #vendorSha256 = pkgs.lib.fakeSha256;
-        vendorSha256 = "sha256-ImGqRlKUEJw0Zj8DwQdXJ8CtYd+lzfmBCuaVUFrae0E=";
+        vendorHash = "sha256-ImGqRlKUEJw0Zj8DwQdXJ8CtYd+lzfmBCuaVUFrae0E=";
 
         # rename binary from go-lsp to snippets-ls
         postInstall = "mv $out/bin/go-lsp $out/bin/snippets-ls";
@@ -58,7 +58,7 @@
       };
     });
 
-    defaultPackage =
-      forAllSystems (system: self.packages.${system}.snippets-ls);
+    # packages =
+    #   forAllSystems (system: self.packages.${system}.snippets-ls);
   };
 }
